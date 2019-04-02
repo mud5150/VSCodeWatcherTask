@@ -1,18 +1,36 @@
 {
-	"version": "0.1.0",
-	"command": "${env.windir}\\sysnative\\windowspowershell\\v1.0\\PowerShell.exe",
-	"isShellCommand": true,
-	"showOutput": "always",
-    "args": [
-        "-NoProfile", "-ExecutionPolicy", "Bypass"
-    ],
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+        "shell": {
+            "executable": "powershell.exe",
+            "args": [ "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command" ]
+        }
+        }
+    },
+    "linux": {
+        "options": {
+        "shell": {
+            "executable": "/usr/bin/pwsh",
+            "args": [ "-NoProfile", "-Command" ]
+        }
+        }
+    },
+    "osx": {
+        "options": {
+        "shell": {
+            "executable": "/usr/local/bin/pwsh",
+            "args": [ "-NoProfile", "-Command" ]
+        }
+        }
+    },
     "tasks": [
         {
-            "taskName": "Watch.Project.Single",
-            "suppressTaskName": true,
-            "args": [
+            "label": "Watch.Project.Single",
+            "type": "shell",
+            "command": [
                 "Write-Host 'Watching Single Project Files';",
-                "Import-Module -Name Pester -RequiredVersion 3.4.3 -Force;",
+                "Import-Module -Name Pester;",
                 "Import-Module -Name PowerShellGuard;",
                 "(gci \"${workspaceRoot}\\${workspaceRootFolderName}\\*.ps1\" -recurse).Foreach{ New-Guard -Path $_.FullName -TestPath \"${workspaceRoot}\\Tests\\$($_.basename).Tests.ps1\" -TestCommand {Write-Host \"Invoking Watch.Project.Single\"; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}} -ErrorAction SilentlyContinue};",
                 "(gci \"${workspaceRoot}\\Tests\\*.ps1\").Foreach{ New-Guard -Path $_.FullName -TestPath $_.FullName -TestCommand {Write-Host \"Invoking Watch.Project.Single\"; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}} -ErrorAction SilentlyContinue};",
@@ -34,21 +52,20 @@
                             "line": 2
                         }
                     ],
-                    "watching": {
+                    "background": {
                         "activeOnStart": true,
                         "beginsPattern": "^Invoking Watch\\.Project\\.Single$",
-                        "endsPattern": "^Passed:\\s\\d+\\sFailed:\\s\\d+\\sSkipped:\\s\\d+\\sPending:\\s\\d+\\sInconclusive:\\s\\d+\\s$"
+                        "endsPattern": "^Tests\\sPassed:\\s\\d+,\\sFailed:\\s\\d+,\\sSkipped:\\s\\d+,\\sPending:\\s\\d+,\\sInconclusive:\\s\\d+\\s$"
                     }
                 }
             ]
         },
         {
-            "taskName": "Watch.Project",
-            "isTestCommand": true,
-            "suppressTaskName": true,
-            "args": [
+            "label": "Watch.Project",
+            "type": "shell",
+            "command": [
                 "Write-Host 'Watching Project';",
-                "Import-Module -Name Pester -RequiredVersion 3.4.3 -Force;",
+                "Import-Module -Name Pester;",
                 "Import-Module -Name PowerShellGuard;",
                 "New-Guard -Path \"${workspaceRoot}\" -PathFilter \"*.ps1\" -MonitorSubdirectories -TestPath \"${workspaceRoot}\\Tests\" -TestCommand {Write-Host \"Invoking Watch.Project\"; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}} -Wait;"
             ],
@@ -68,20 +85,20 @@
                             "line": 2
                         }
                     ],
-                    "watching": {
+                    "background": {
                         "activeOnStart": true,
                         "beginsPattern": "^Invoking Watch\\.Project$",
-                        "endsPattern": "^Passed:\\s\\d+\\sFailed:\\s\\d+\\sSkipped:\\s\\d+\\sPending:\\s\\d+\\sInconclusive:\\s\\d+\\s$"
+                        "endsPattern": "^Tests\\sPassed:\\s\\d+,\\sFailed:\\s\\d+,\\sSkipped:\\s\\d+,\\sPending:\\s\\d+,\\sInconclusive:\\s\\d+\\s$"
                     }
                 }
             ]
         },
         {
-            "taskName": "Watch.Tests.Single",
-            "suppressTaskName": true,
-            "args": [
+            "label": "Watch.Tests.Single",
+            "type": "shell",
+            "command": [
                 "Write-Host 'Watching Tests';",
-                "Import-Module -Name Pester -RequiredVersion 3.4.3 -Force;",
+                "Import-Module -Name Pester;",
                 "Import-Module PowerShellGuard;",
                 "(gci \"${workspaceRoot}\\Tests\\*.ps1\").Foreach{ New-Guard -Path $_.FullName -TestPath $_.FullName -TestCommand {Write-Host \"Invoking Watch.Tests.Single\"; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}} -ErrorAction SilentlyContinue};",
                 "Wait-Guard"
@@ -102,20 +119,20 @@
                             "line": 2
                         }
                     ],
-                    "watching": {
+                    "background": {
                         "activeOnStart": true,
                         "beginsPattern": "^Invoking Watch\\.Tests\\.Single$",
-                        "endsPattern": "^Passed:\\s\\d+\\sFailed:\\s\\d+\\sSkipped:\\s\\d+\\sPending:\\s\\d+\\sInconclusive:\\s\\d+\\s$"
+                        "endsPattern": "^Tests\\sPassed:\\s\\d+,\\sFailed:\\s\\d+,\\sSkipped:\\s\\d+,\\sPending:\\s\\d+,\\sInconclusive:\\s\\d+\\s$"
                     }
                 }
             ]
         },
         {
-            "taskName": "Watch.Tests",
-            "suppressTaskName": true,
-            "args": [
+            "label": "Watch.Tests",
+            "type": "shell",
+            "command": [
                 "Write-Host 'Watching Tests';",
-                "Import-Module -Name Pester -RequiredVersion 3.4.3 -Force;",
+                "Import-Module -Name Pester;",
                 "Import-Module PowerShellGuard;",
                 "(gci \"${workspaceRoot}\\Tests\\*.ps1\").Foreach{ New-Guard -Path $_.FullName -TestPath $_.FullName -TestCommand {Write-Host \"Invoking Watch.Tests\"; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}} -ErrorAction SilentlyContinue};",
                 "Wait-Guard"
@@ -136,10 +153,10 @@
                             "line": 2
                         }
                     ],
-                    "watching": {
+                    "background": {
                         "activeOnStart": true,
                         "beginsPattern": "^Invoking Watch\\.Tests$",
-                        "endsPattern": "^Passed:\\s\\d+\\sFailed:\\s\\d+\\sSkipped:\\s\\d+\\sPending:\\s\\d+\\sInconclusive:\\s\\d+\\s$"
+                        "endsPattern": "^Tests\\sPassed:\\s\\d+,\\sFailed:\\s\\d+,\\sSkipped:\\s\\d+,\\sPending:\\s\\d+,\\sInconclusive:\\s\\d+\\s$"
                     }
                 }
             ]
